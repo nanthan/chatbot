@@ -1,15 +1,15 @@
 'use strict';
 
-let express = require('express');
-let app = express();
-let http = require('http');
-let bodyParser = require('body-parser');
-let errorHandler = require('errorhandler');
-let cors = require('cors');
-let request = require('request');
-let path = require('path');
-let hostname = process.env.HOSTNAME || 'localhost';
-let port = parseInt(process.env.PORT, 10) || 80;
+var express = require('express');
+var app = express();
+var http = require('http');
+var bodyParser = require('body-parser');
+var errorHandler = require('errorhandler');
+var cors = require('cors');
+var request = require('request');
+var path = require('path');
+var hostname = process.env.HOSTNAME || 'localhost';
+var port = parseInt(process.env.PORT, 10) || 80;
 
 // app.use(express.static(publicDir));
 app.use(bodyParser.json());
