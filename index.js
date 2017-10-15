@@ -9,7 +9,7 @@ var cors = require('cors');
 var request = require('request');
 var path = require('path');
 var hostname = process.env.HOSTNAME || 'localhost';
-var port = parseInt(process.env.PORT, 10) || 80;
+var port = parseInt(process.env.PORT, 10) || 8080;
 
 // app.use(express.static(publicDir));
 app.use(bodyParser.json());
@@ -23,9 +23,10 @@ app.use(errorHandler({
 app.get("/", function (req, res) {
 	console.log('hostname', hostname);
 	console.log('port', port);
+	console.log('process.env.PORT', process.env.PORT);
 	res.sendStatus(200);
 });
 
-http.createServer(app).listen(80, function(){
+http.createServer(app).listen(port, function(){
 	console.log("Server running on http://%s:%s", hostname, port);
 });
