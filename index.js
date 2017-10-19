@@ -1,32 +1,52 @@
 'use strict';
 
 var express = require('express');
-var app = express();
-var http = require('http');
 var bodyParser = require('body-parser');
-var errorHandler = require('errorhandler');
-var cors = require('cors');
-var request = require('request');
-var path = require('path');
-var hostname = process.env.HOSTNAME || 'localhost';
-var port = parseInt(process.env.PORT, 10) || 8080;
+var app = express();
+const line = require('@line/bot-sdk');
 
-// app.use(express.static(publicDir));
-app.use(bodyParser.json());
-app.use(cors());
-app.use(errorHandler({
-	dumpExceptions: true,
-	showStack: true
-}));
+var config = {
+	channelAccessToken: 'WEsLGM9gUc7vZWylP9w9IMNvQ+QP9/71bE3ettpEsQWWZxjSuUGPrIP1qAensHU9E3CfkrEsZM1BhKsL45xRIvq/W9V6tZ9gkhxSS20UG26vdn4Klt6yqbMkeoFb8Y8uXrhdwSOc+ujn/tsuX0s6ogdB04t89/1O/w1cDnyilFU=',
+	channelSecret: '9daa6541856d2b012d4181eb199ccb06',
+};
 
+const client = new line.Client(config);
 
-app.get("/", function (req, res) {
-	console.log('hostname', hostname);
-	console.log('port', port);
-	console.log('process.env.PORT', process.env.PORT);
+app.get('/', (req, res) => {
 	res.sendStatus(200);
 });
 
-http.createServer(app).listen(port, function(){
-	console.log("Server running on http://%s:%s", hostname, port);
+app.post('/api/deposit', bodyParser.json(), (req, res) => {
+	console.log('body', req.body);
+	console.log('query', req.query);
+	console.log(req.body.test);
+	res.sendStatus(200);
+});
+
+app.post('/api/linehook', line.middleware(config), (req, res) => {
+	console.log('post: /api/linehook');
+	Promise
+	.all(req.body.events.map(handleEvent))
+	.then((result) => res.json(result));
+});
+
+function handleEvent(event) {
+	console.log('event', event);
+	if (event.type !== 'message' || event.message.type !== 'text') {
+		// ignore non-text-message event
+		return Promise.resolve(null);
+	}
+
+	// create a echoing text message
+	const echo = { type: 'text', text: event.message.text };
+
+	console.log('event.message.text', event.message.text);
+	// use reply API
+	return client.replyMessage(event.replyToken, echo);
+}
+
+// listen on port
+var port = process.env.PORT || 3000;
+app.listen(port, () => {
+	console.log(`listening on ${port}`);
 });
